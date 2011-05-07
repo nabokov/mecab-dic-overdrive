@@ -17,7 +17,7 @@ use Time::HiRes qw(gettimeofday tv_interval);
 
 
 our @EXPORT_OK = (
-                    qw(normalize_text strip_html
+                    qw(strip_html
                        db2internal internal2db source2internal internal2console console2internal web2internal internal2web
                        init_logger db_error init_db
                        split_csv join_csv add_element_to_csv

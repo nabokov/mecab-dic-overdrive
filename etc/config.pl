@@ -1,4 +1,6 @@
-$HOME = '/home/user1/mecab-dic-overdrive'; ### 最初に設定すること
+### 最低，以下の二つは必ず最初に設定すること
+$HOME = '/home/user1/mecab-dic-overdrive'; ### このプロジェクトを解凍した場所。
+$DIC_SRC_DIR = '/home/user1/mecab-ipadic-2.7.0-20070801'; ### ipadicのソースを解凍した場所。
 
 +{
     home_dir => $HOME,
@@ -8,6 +10,8 @@ $HOME = '/home/user1/mecab-dic-overdrive'; ### 最初に設定すること
     default_normalize_opts => [qw(decode_entities strip_single_nl wavetilde2long fullminus2long dashes2long drawing_lines2long unify_long_repeats nfkc lc)],
 
     # 辞書生成関連
+    dic_src_dir => $DIC_SRC_DIR, # ipadicのソースを解凍した場所。(主に matrix.def と left/right-id.def を読み込む時用)
+
     dic_aux_files_dir => $HOME.'/misc/dic', # デフォルトのipadicに対するパッチとか追加辞書データとかをおいておくところ
 
     idfile_kanji_code => 'utf-8', # idfileの漢字コード=dic_src_dirにあるソースのエンコーディング

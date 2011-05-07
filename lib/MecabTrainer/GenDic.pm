@@ -38,7 +38,7 @@ sub defaults {
 
         normalize_opts => $conf->{default_normalize_opts},
 
-        dic_src_dir => '.',
+        dic_src_dir => $conf->{dic_src_dir},
 
         dicdir => $conf->{dicdir},
 

@@ -3,7 +3,6 @@
 #
 # 初期辞書 (ipadic) をutf8に変換 & ノーマライズするスクリプト
 #
-# initialize_dic.pl --dic_src_dir=(path-to mecab-ipadic-dir)
 
 use strict;
 use Encode;
@@ -14,48 +13,30 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";
 use MecabTrainer::Config;
 use MecabTrainer::Utils qw(:all);
+use MecabTrainer::NormalizeText;
 use MecabTrainer::GenDic;
 
-my $conf = MecabTrainer::Config->new;
-my $logger = init_logger($conf->{log_conf});
+my $logger = init_logger(MecabTrainer::Config->new->{log_conf});
 
 my %opts;
 $opts{compile} = 1;
 $opts{install} = 1;
-&GetOptions(\%opts, 'dic_src_dir=s', 'mecab_dict_index=s', 'normalize_opts=s', 'out_kanji_code=s', 'dic_kanji_code=s', 'compile!', 'install!');
-
-my $dir = $opts{dic_src_dir};
+&GetOptions(\%opts, 'compile!', 'install!');
 
 unless ($dir && -e $dir) {
     print <<EOS;
 usage:
-  initialize_dic.pl --dic_src_dir=(path to ipadic src dir)
-                    [
-                      --nocompile --noinstall
-
-                      (options below are read from conf by default)
-                      --normalize_opts=(list of normalization opts. e.g."nfkc,lc". see Utils.pm for details)
-                      --mecab_dict_index=(path to mecab-dict-index)
-                      --out_kanji_code=(intermediate csv kanji code)
-                      --dic_kanji_code=(final binary dic kanji code)
-                    ]
+  initialize_dic.pl [ --nocompile --noinstall ]
+  see etc/config.pl for details.
 EOS
     exit;
 }
 
-my %gendic_args;
-for (qw(dic_src_dir mecab_dict_index)) {
-    $gendic_args{$_} = $opts{$_} if defined($opts{$_});
-}
-if ($opts{normalize_opts}) {
-    $gendic_args{normalize_opts} = [ split(/[,:]/, $opts{normalize_opts}) ];
-}
+my $normalizer = MecabTrainer::NormalizeText->new($conf->{default_normalize_opts});
 
 my $in_kanji_code = 'euc-jp';
-my $out_kanji_code = $gendic_args{out_kanji_code} = $opts{out_kanji_code} || $conf->{out_kanji_code};
-my $dic_kanji_code = $gendic_args{dic_kanji_code} = $opts{dic_kanji_code} || $conf->{dic_kanji_code};
-
-
+my $out_kanji_code = $conf->{out_kanji_code};
+my $dic_kanji_code = $conf->{dic_kanji_code};
 
 
 # configure
@@ -100,7 +81,7 @@ while (my $file =readdir(DIR)) {
         while (my $line = <IN>) {
             chomp $line;
             my @f = split_csv(Encode::decode($out_kanji_code, $line));
-            $f[0] = normalize_text($f[0], $conf->{default_normalize_opts}); # normalizeするのはsurfaceのとこだけ
+            $f[0] = $normalizer->normalize($f[0]); # normalizeするのはsurfaceのとこだけ
             print OUT Encode::encode($out_kanji_code, join_csv(@f));
             print OUT "\n";
         }

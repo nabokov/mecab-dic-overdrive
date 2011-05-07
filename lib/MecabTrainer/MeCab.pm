@@ -110,7 +110,6 @@ sub normalize_features {
     my ($class, $surface, @f) = @_;
 
     $surface =~ s/[\n\r]//g;
-#    $surface = &Utils::normalize_text($surface);
 
     for (0..5) { $f[$_] = '*' if !($f[$_]) };
     $f[$FEATURES_STEM_INDEX] = $surface if (!$f[$FEATURES_STEM_INDEX] or $f[$FEATURES_STEM_INDEX] eq '*');
