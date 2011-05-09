@@ -16,15 +16,19 @@ use MecabTrainer::Utils qw(:all);
 use MecabTrainer::NormalizeText;
 use MecabTrainer::GenDic;
 
-my $logger = init_logger(MecabTrainer::Config->new->{log_conf});
+my $conf = MecabTrainer::Config->new;
+my $logger = init_logger($conf->{log_conf});
 
 my %opts;
 $opts{compile} = 1;
 $opts{install} = 1;
 &GetOptions(\%opts, 'compile!', 'install!');
 
+my $dir = $conf->{dic_src_dir};
 unless ($dir && -e $dir) {
     print <<EOS;
+dic_src_dir ('$dir') not set or not found.
+
 usage:
   initialize_dic.pl [ --nocompile --noinstall ]
   see etc/config.pl for details.
@@ -104,7 +108,7 @@ unless ($n_files) { $logger->logdie("no files found. may be wrong dir ?") }
 # compile & install
 
 if ($opts{compile}) {
-    MecabTrainer::GenDic->new(%gendic_args)->compile_dic;
+    MecabTrainer::GenDic->new->compile_dic;
 }
 if ($opts{install}) {
     system("cd $dir; sudo make install") == 0 or $logger->logdie('"sudo make install" failed. may be you should run this by hand');

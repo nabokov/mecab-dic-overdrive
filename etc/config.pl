@@ -18,7 +18,7 @@ $DIC_SRC_DIR = '/home/user1/mecab-ipadic-2.7.0-20070801'; ### ipadicのソース
     out_kanji_code => 'utf-8', # CSV出力時のエンコーディング(mecab-dict-indexが読み込む)
     dic_kanji_code => 'utf-8', # 辞書バイナリのエンコーディング(mecabが読み込む)
 
-    dicdir => "/usr/local/lib/mecab/dic/ipadic-utf8", # インストール済のmecab用dicdir (mecabの引数として渡す用)
+    dicdir => "/usr/local/lib/mecab/dic/ipadic", # インストール済のmecab用dicdir (mecabの引数として渡す用)
     mecab_dict_index => "/usr/local/libexec/mecab/mecab-dict-index",
 
     # Text::MeCabがデフォルトで使う追加辞書

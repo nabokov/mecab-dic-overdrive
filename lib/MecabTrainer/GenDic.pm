@@ -146,10 +146,12 @@ sub _supply_base_cost {
             if (!$found_b and my ($cost) = ($line =~ /^0\s+$target_id\s+([0-9\-]+)/)) {
                 $morph->{base_cost} += $cost;
                 $found_b = 1;
+                $logger->debug ("BOS->$target_id cost:$cost");
             }
             elsif (!$found_e and my ($cost) = ($line =~ /^$target_id\s+0\s+([0-9\-]+)/)) {
                 $morph->{base_cost} += $cost;
                 $found_e = 1;
+                $logger->debug ("$target_id->EOS cost:$cost");
             }
             last if ($found_b and $found_e);
         }

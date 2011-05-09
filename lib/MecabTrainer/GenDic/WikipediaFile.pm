@@ -4,7 +4,7 @@ package MecabTrainer::GenDic::WikipediaFile;
 #
 # ・--target=wikipedia と違ってDBを介さないので楽。ただしダンプ形式がちょっとでも変わるとダメになるので
 #   その場合は --target=wikipedia の方を使うこと。
-# ・--from_file に .gz を直接指定する場合は zcat 必須。
+# ・from_file に .gz を直接指定する場合は zcat 必須。
 
 use base qw(MecabTrainer::GenDic);
 use strict;
@@ -20,7 +20,15 @@ sub new {
     my $self = $class->SUPER::new(@_);
 
     my $in = $self->{from_file};
-    if ($in =~ /\.gz$/) { $in = "zcat $in|" }
+    if ($in =~ /\.gz$/) {
+        if (`which gzcat`) {
+            $in = "gzcat $in|";
+        } elsif (`which zcat`) {
+            $in = "zcat $in|";
+        } else {
+            $logger->fatal("no gzcat/zcat found. cannot process .gz file");
+        }
+    }
 
     open $self->{fh}, $in;
     return $self;

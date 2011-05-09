@@ -25,27 +25,44 @@ use lib "$FindBin::Bin/../lib";
 use MecabTrainer::Config;
 use MecabTrainer::Utils qw(:all);
 
-my $logger = init_logger(MecabTrainer::Config->new->{log_conf});
+my $conf = MecabTrainer::Config->new;
+my $logger = init_logger($conf->{log_conf});
 
 my %opts;
 $opts{compile} = 1;
-&GetOptions(\%opts, 'target=s', 'compile!');
+&GetOptions(\%opts, 'target=s', 'from_file=s', 'compile!');
 
 my $gen_dic_class = $opts{target};
 $gen_dic_class =~ s/(^|_|-)(.)/uc($2)/eg;
 $gen_dic_class = "MecabTrainer::GenDic::".$gen_dic_class;
 
+my $proceed = 1;
+my $dir = $conf->{dic_src_dir};
+unless ($dir && -e $dir) {
+    print <<EOS;
+dic_src_dir ('$dir') not set or not found.
+EOS
+    $proceed = 0;
+}
 eval "require $gen_dic_class";
 if ($@) {
     print <<EOS;
+target ('$gen_dic_class') not set or not found.
+EOS
+    $proceed = 0;
+}
+unless ($proceed) {
+    print <<EOS;
 usage:
-  generate_dic.pl --target=(plugin classname = wikipedia | kaomoji | simple_list ...) [ --nocompile ]
+  generate_dic.pl --target=(plugin classname = wikipedia_file | wikipedia | kaomoji | simple_list ...) [ --nocompile ] [ --from_file=path/to/input/file ]
   see etc/config.pl and lib/MecabTrainer/GenDic/*.pm for details.
 EOS
     exit;
 }
 
-my $gen_dic = $gen_dic_class->new;
+
+my %gendic_args; for (qw(from_file)) { $gendic_args{$_} = $opts{$_} if $opts{$_} };
+my $gen_dic = $gen_dic_class->new(%gendic_args);
 
 $gen_dic->prepare_costs;
 $gen_dic->write_csv;
