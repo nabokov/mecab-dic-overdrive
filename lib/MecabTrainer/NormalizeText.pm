@@ -16,7 +16,7 @@ my $logger = init_logger($conf->{log_conf});
 
 my @AVAILABLE_OPTS = qw(decode_entities strip_html strip_nl strip_single_nl
                 unify_whitespaces wave2tilde wavetilde2long fullminus2long
-                dashes2long drawing_lines2long unify_long_repeats nfkc lc);
+                dashes2long drawing_lines2long unify_long_repeats nfkc nfkd nfc nfd lc);
 
 sub new {
     my $class = shift;
@@ -113,6 +113,15 @@ sub __unify_long_repeats {
 }
 sub __nfkc {
     return sub { Unicode::Normalize::NFKC(shift); }
+}
+sub __nfkd {
+    return sub { Unicode::Normalize::NFKD(shift); }
+}
+sub __nfc {
+    return sub { Unicode::Normalize::NFC(shift); }
+}
+sub __nfd {
+    return sub { Unicode::Normalize::NFD(shift); }
 }
 sub __lc {
     return sub { lc(shift); }
