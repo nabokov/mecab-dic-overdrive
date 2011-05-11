@@ -10,11 +10,7 @@ use Unicode::RecursiveDowngrade;
 use HTML::Entities;
 
 use DBI;
-use Data::Dumper;
-use Time::Piece;
 use Log::Log4perl qw(:easy);
-use Time::HiRes qw(gettimeofday tv_interval);
-
 
 our @EXPORT_OK = (
                     qw(strip_html
@@ -66,18 +62,6 @@ sub internal2web {
 #
 # ログ関連
 #
-
-Log::Log4perl::Layout::PatternLayout::add_global_cspec('E',
-    sub {
-        our $LAST_MESSAGE_TIME;
-
-        my $mes = sprintf("%.3f sec from start", tv_interval($Log::Log4perl::Layout::PatternLayout::PROGRAM_START_TIME));
-        if ($LAST_MESSAGE_TIME) {
-            $mes .= sprintf(", %.3f sec from last msg." , tv_interval($LAST_MESSAGE_TIME));
-        }
-        $LAST_MESSAGE_TIME = [gettimeofday];
-        return $mes;
-    });
 
 Log::Log4perl::Layout::PatternLayout::add_global_cspec('B',
     sub {
