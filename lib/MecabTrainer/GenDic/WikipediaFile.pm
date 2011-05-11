@@ -20,17 +20,17 @@ sub new {
     my $self = $class->SUPER::new(@_);
 
     my $in = $self->{from_file};
-    if ($in =~ /\.gz$/) {
+    if (-f "$in.gz") {
         if (`which gzcat`) {
-            $in = "gzcat $in|";
+            $in = "gzcat $in.gz|";
         } elsif (`which zcat`) {
-            $in = "zcat $in|";
+            $in = "zcat $in.gz|";
         } else {
-            $logger->fatal("no gzcat/zcat found. cannot process .gz file");
+            $logger->info(".gz found, but gzcat/zcat not available");
         }
     }
 
-    open $self->{fh}, $in;
+    open $self->{fh}, $in or $logger->logdie("open $in failed");
     return $self;
 }
 
@@ -40,7 +40,7 @@ sub defaults {
         %{$class->SUPER::defaults},
 
         in_kanji_code => 'utf-8',
-        from_file => $conf->{dic_aux_files_dir} .'/jawiki-latest-page.sql.gz',
+        from_file => $conf->{dic_aux_files_dir} .'/jawiki-latest-page.sql',
         to_file => $conf->{dic_aux_files_dir} . '/wikipedia.csv',
         dic_file => $conf->{dic_aux_files_dir} . '/wikipedia.dic',
         morphs => [ { feature => source2internal('名詞,固有名詞,一般,*,*,*,*') } ],
