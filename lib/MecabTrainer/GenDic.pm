@@ -11,7 +11,7 @@ use MecabTrainer::Utils qw(:all);
 
 use MecabTrainer::NormalizeText;
 
-my $max_cost = 32768; # should be =< 32768
+my $max_cost = 30000; # should be =< 32768
 my $min_cost = 0;
 
 my $conf = MecabTrainer::Config->new;
